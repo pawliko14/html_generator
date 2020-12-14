@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 /*
  
  PORGRAM ODPOWIEDZIALNY ZA TWORZENIE PLIKOW HTML Z ALARMAMI
@@ -29,7 +31,7 @@ import java.util.Iterator;
 
 class Parameters {
 	
-	public static final String PATH_TO_SAVE = "C:\\Users\\el08\\Desktop\\programiki\\";
+	public static final String PATH_TO_SAVE = plc_alarm_gui.nazwa;
 	
 }
 
@@ -85,22 +87,13 @@ public class SourceCode {
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 String cellValue = dataFormatter.formatCellValue(cell);
-                System.out.print(cellValue + "\n");
+                System.out.println(cellValue + "\n");
                 
                 /*
                  x ==0, x== 2 itp. chodzi tutaj o kolumny z danymi w zasysanym dokumencie
                  w tym przypadku dokument rozszerzony jest o jakies niepotrzebne informacje,
                  ktore trzeba przeskoczyc ( dlatego nie ma x ==1)
                  */
-                
-//                if(x == 0)
-//                	ob.numer = cellValue;
-//                else if(x == 2)
-//                	ob.komentarz = cellValue;
-//                else if(x == 4)
-//                	ob.reason = cellValue;
-//                else if(x == 5)
-//                	ob.solution = cellValue;
                 
                 if(x == 0)
                 	ob.numer = cellValue;
@@ -110,9 +103,12 @@ public class SourceCode {
                 	ob.solution = cellValue;
                 else if(x == 2)
                 	ob.komentarz = cellValue;
+                else if(x ==4)
+                	ob.path_to_photo1 = cellValue;
+                else if(x ==5)
+                	ob.path_to_photo2 = cellValue;
                 
                 x++;
-
             }
             obj.add(ob);
             x = 0;
@@ -122,7 +118,8 @@ public class SourceCode {
         }
         createDir(DirFile);
         for(int i = 0;i < obj.size();i++) {
-        		HTML(obj.get(i).numer,obj.get(i).reason, obj.get(i).solution, obj.get(i).komentarz, DirFile);
+        	System.out.println("dir: " + DirFile);
+        		HTML(obj.get(i).numer,obj.get(i).reason, obj.get(i).solution, obj.get(i).komentarz,obj.get(1).getPath_to_photo1(),obj.get(i).getPath_to_photo2());
         }
         
         // Closing the workbook
@@ -130,14 +127,18 @@ public class SourceCode {
     }
     
     
-    public static void HTML(String numer, String powod, String rozwiazanie, String komenatrz,String DirFile) {
+    public static void HTML(String numer, String powod, String rozwiazanie, String komenatrz,String img1, String img2) {
     	
+    	img1 = "\"" + img1 + "\"";
+    	img2 = "\"" + img2 + "\"";
+    	 
         StringBuilder htmlBuilder = new StringBuilder();
-        htmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD");
-        htmlBuilder.append("HTML 4.0 Transitional//EN\" >");
+        htmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html>");
         htmlBuilder.append("<html>");
-        htmlBuilder.append("<head><title></title></head>");
+        htmlBuilder.append("<head><meta charset=\"UTF-8\"></meta></head>");
         htmlBuilder.append("<body>");
+        htmlBuilder.append("<img src="+img1+" alt=\"image1\"></img>\r\n");
+        htmlBuilder.append("<img src="+img2+" alt=\"image1\"></img>\r\n");
         htmlBuilder.append("<table>");
         htmlBuilder.append("<tr>");
         htmlBuilder.append("- <td width=\"15%\">");
@@ -168,7 +169,7 @@ public class SourceCode {
         String html = htmlBuilder.toString();
         
 
-        File s_file = new File(Parameters.PATH_TO_SAVE +DirFile +"\\"+numer+".html");
+        File s_file = new File(Parameters.PATH_TO_SAVE +"\\"+numer+".html");
     
         try {
         	BufferedWriter bw = new BufferedWriter (new FileWriter(s_file));
@@ -176,6 +177,8 @@ public class SourceCode {
         	bw.close();
         }
         catch (IOException e){
+        	
+	        JOptionPane.showMessageDialog(null, e, "prawodpodobnie nie mozna utworzyc nowych plikow ", JOptionPane.INFORMATION_MESSAGE);
         	e.printStackTrace();
         }
     }
@@ -191,6 +194,7 @@ public class SourceCode {
                 result = true;
             } 
             catch(SecurityException se){
+    	        JOptionPane.showMessageDialog(null, se, "prawodpodobnie jakis problem z utworzeniem folderu ", JOptionPane.INFORMATION_MESSAGE);
                 //handle it
             }        
             if(result) {    

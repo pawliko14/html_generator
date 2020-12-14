@@ -4,7 +4,23 @@ public class obiekt {
 	String komentarz;
 	String reason;
 	String solution;
+	String path_to_photo1;
+	String path_to_photo2;
 	
+	
+	
+	public String getPath_to_photo1() {
+		return path_to_photo1;
+	}
+	public void setPath_to_photo1(String path_to_photo1) {
+		this.path_to_photo1 = path_to_photo1;
+	}
+	public String getPath_to_photo2() {
+		return path_to_photo2;
+	}
+	public void setPath_to_photo2(String path_to_photo2) {
+		this.path_to_photo2 = path_to_photo2;
+	}
 	public String getNumer() {
 		return numer;
 	}

@@ -2,7 +2,9 @@ import java.awt.Desktop;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -16,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
+
 public class plc_alarm_gui {
 
 	private JFrame frame;
@@ -25,8 +28,9 @@ public class plc_alarm_gui {
 	private JTextField textField;
 	private JButton btnPlik;
 	private String filename;
-	private String nazwa;
+	public static  String nazwa;
 	private JButton btnOtworzFolder;
+	private  File file;
 
 	/**
 	 * Launch the application.
@@ -65,6 +69,7 @@ public class plc_alarm_gui {
 		txtPodajPlikXls = new JTextField();
 		txtPodajPlikXls.setText("Podaj plik xls z alarmami");
 		txtPodajPlikXls.setBounds(63, 75, 173, 20);
+		txtPodajPlikXls.setEnabled(false);
 		frame.getContentPane().add(txtPodajPlikXls);
 		txtPodajPlikXls.setColumns(10);
 		
@@ -73,6 +78,7 @@ public class plc_alarm_gui {
 		txtProgramDoTworzenia.setText("program do tworzenia alarmow w odrebnych plikach html");
 		txtProgramDoTworzenia.setEditable(false);
 		txtProgramDoTworzenia.setBounds(24, 11, 389, 37);
+		txtProgramDoTworzenia.setEnabled(false);
 		frame.getContentPane().add(txtProgramDoTworzenia);
 		txtProgramDoTworzenia.setColumns(10);
 		
@@ -80,6 +86,7 @@ public class plc_alarm_gui {
 		txtPodajNazweFolderu.setText("podaj nazwe folderu do zapisu");
 		txtPodajNazweFolderu.setColumns(10);
 		txtPodajNazweFolderu.setBounds(63, 122, 173, 20);
+		txtPodajNazweFolderu.setEnabled(false);
 		frame.getContentPane().add(txtPodajNazweFolderu);
 		
 	
@@ -91,7 +98,7 @@ public class plc_alarm_gui {
 			       Desktop desktop = Desktop.getDesktop();
 			        File dirToOpen = null;
 			        try {
-			            dirToOpen = new File(Parameters.PATH_TO_SAVE + nazwa);
+			            dirToOpen = new File( nazwa);
 			            desktop.open(dirToOpen);
 			        } catch (IllegalArgumentException iae) {
 			            System.out.println("File Not Found: "+ nazwa);
@@ -106,27 +113,74 @@ public class plc_alarm_gui {
 		frame.getContentPane().add(btnOtworzFolder);
 		
 		
-		textField = new JTextField();
-		textField.setBounds(271, 122, 119, 20);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
-		
-		nazwa = textField.getText();
-				
+//		textField = new JTextField();
+//		textField.setBounds(271, 122, 119, 20);
+//		frame.getContentPane().add(textField);
+//		textField.setColumns(10);
+//		
+//		nazwa = textField.getText();
+		   
+		JButton btnFIleDestination = new JButton("destination");
+			btnFIleDestination.setBounds(271, 122, 119, 20);
+			frame.getContentPane().add((btnFIleDestination));
+			
+			
+			
+			
+			
+			btnFIleDestination.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) 
+				{
+				     JFileChooser fileChooser = new JFileChooser();
+			            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			            int option = fileChooser.showOpenDialog(frame);
+			            
+			            if(option == JFileChooser.APPROVE_OPTION)
+			            {
+			               file = fileChooser.getSelectedFile();
+			               
+			               nazwa = file.getAbsoluteFile().toString();
+			               txtPodajNazweFolderu.setText(nazwa);
+			            }
+			            
+					
+				}
+			});
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			////
+			
+			
 		btnPlik = new JButton("plik");
 		
+		
+		
+		
+		
+		
+		 ////////////
+		
 		JButton btnNewButton = new JButton("utworz pliki HTML");
+		
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			
 				try {
-					nazwa = textField.getText();
+				//	nazwa = textField.getText();
 					SourceCode.RUN(filename,nazwa);
 					btnOtworzFolder.setVisible(true);
 
 				} catch (EncryptedDocumentException | InvalidFormatException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+			        JOptionPane.showMessageDialog(null, e1, "prawodpodobnie plik excela nei jest zamkniety, zamknij ", JOptionPane.INFORMATION_MESSAGE);
 				}
 				
 			}
@@ -137,12 +191,16 @@ public class plc_alarm_gui {
 		btnPlik.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser chooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("xls","xls");
+				chooser.setFileFilter(filter);
 				chooser.showOpenDialog(null);
+				
 				File f = chooser.getSelectedFile();
 				 filename = f.getAbsolutePath();
 				
 				//path.setText(filename);
 				
+				 txtPodajPlikXls.setText(filename);
 			}
 		});
 		btnPlik.setBounds(271, 74, 113, 23);
